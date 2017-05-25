@@ -1,0 +1,39 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                tools:context="pl.marczak.ifixpicturesrenderer.ifixPicture.IfixScreenFragment">
+
+    <RelativeLayout
+        android:id="@+id/contentView"
+        android:layout_width="match_parent"
+        android:layout_height="300sp"
+        android:elevation="@dimen/cardview_default_radius"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <Switch
+        android:id="@+id/enable_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/contentView"
+        android:layout_margin="8dp"
+        android:text="subscribe to data"
+        android:textSize="22sp"/>
+    <EditText
+        android:layout_margin="8sp"
+        android:hint="endpoint..."
+        android:id="@+id/endpointEditText"
+        android:layout_below="@+id/enable_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>
