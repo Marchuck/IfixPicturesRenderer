@@ -7,6 +7,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.util.List;
 
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
@@ -46,9 +47,15 @@ public class OpcDaClient {
 
     }
 
-    public Single<List<ItemValueResult>> getWorkspace() {
+    public Observable<List<ItemValueResult>> getWorkspace() {
         return api.getWorkspace();
     }
+
+    public Observable<List<ItemValueResult>> goFuckYourself() {
+        return api.getWorkspace();
+    }
+
+
 
     public Single<List<String>> getAvailablePictures() {
         return api.browseAvailablePictures(true);

@@ -13,10 +13,19 @@ import static java.lang.String.valueOf;
 
 public class AnimationSemantics {
 
-    public @SerializedName("ci") String associatedSignal = "";
+    public static class Apply {
+
+        public @SerializedName("ci") String associatedSignal;
+
+        @Override public String toString() {
+            return String.valueOf(associatedSignal);
+        }
+    }
+
+    public @SerializedName("apply") Apply apply;
 
     @Override public String toString() {
-        return valueOf(associatedSignal);
-
+        return "apply=" + apply +
+                '}';
     }
 }

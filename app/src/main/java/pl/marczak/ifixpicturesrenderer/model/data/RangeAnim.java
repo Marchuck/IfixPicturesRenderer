@@ -18,16 +18,13 @@ public class RangeAnim implements AbstractData {
 
     public String id;
     Attributes attributes;
-    String name;
-    double highInputValue;
-    double maxOutputValue;
-
-    double lowInputValue;
-    double minOutputValue;
-
-    double verticalFillPercentage;
-
-    String verticalFillDirection; //bottomToTop or ? todo: check this
+    public String name;
+    public double highInputValue;
+    public double maxOutputValue;
+    public double lowInputValue;
+    public double minOutputValue;
+    public double verticalFillPercentage;
+    public String verticalFillDirection; //bottomToTop or ? todo: check this
 
     public RangeAnim() {
 
@@ -35,7 +32,7 @@ public class RangeAnim implements AbstractData {
 
     public RangeAnim(RangeAnimation anim) {
         id = anim.id;
-        name = "";
+        name = anim.id;
         highInputValue = Double.valueOf(anim.highInputValue);
         maxOutputValue = Double.valueOf(anim.maxOutputValue);
 

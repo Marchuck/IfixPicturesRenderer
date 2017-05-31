@@ -1,7 +1,12 @@
 package pl.marczak.ifixpicturesrenderer.ifixPicture
 
+import android.util.Log
+import io.reactivex.Scheduler
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import pl.marczak.ifixpicturesrenderer.codebase.RxCommons
 import pl.marczak.ifixpicturesrenderer.connection.OpcDaClient
 import pl.marczak.ifixpicturesrenderer.connection.opc_da_model.Image
@@ -19,6 +24,7 @@ import java.util.concurrent.TimeUnit
  */
 class IfixScreenPresenter(view: IfixScreenView?, restClient: OpcDaClient, parser: XmlParserWrapper) {
 
+    val newResults: PublishSubject<List<ItemValueResult>> = PublishSubject.create()
     var view: IfixScreenView? = null
 
     val restClient: OpcDaClient
@@ -72,26 +78,25 @@ class IfixScreenPresenter(view: IfixScreenView?, restClient: OpcDaClient, parser
     }
 
     fun performUpdate() {
+        Log.w("IfixScreenPresenter", "performUpdate")
         disposeIfNotDisposed()
-        restClient.workspace
-                .delay(200, TimeUnit.MILLISECONDS)
-                .doOnSubscribe { view?.onLoadStart() }
-                .compose(RxCommons.applySchedulers<List<ItemValueResult>>())
-                .subscribeWith(object : SingleObserver<List<ItemValueResult>> {
-                    override fun onSubscribe(d: Disposable) {
-                        updatesDisposable = d
-                    }
+        restClient.goFuckYourself()
+                .doOnSubscribe { d -> updatesDisposable = d }
+                .subscribeOn(Schedulers.newThread())
+                .subscribeWith(object : DisposableObserver<List<ItemValueResult>>() {
 
-                    override fun onSuccess(value: List<ItemValueResult>) {
-                        view?.onPictureRecycle(value)
-                        if (updatesEnabled) {
-                            requestUpdates()
-                        }
-
+                    override fun onNext(value: List<ItemValueResult>) {
+                        Log.d("IfixScreenPresenter", "performUpdate")
+                        newResults.onNext(value)
+                        performUpdate()
                     }
 
                     override fun onError(e: Throwable) {
+                        Log.e("IfixScreenPresenter", "error: ", e)
                         view?.onPictureError()
+                    }
+
+                    override fun onComplete() {
                     }
                 })
 

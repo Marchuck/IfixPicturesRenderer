@@ -29,14 +29,40 @@ public class RangeAnimation {
 
 
     @Override public String toString() {
-        final StringBuilder sb = new StringBuilder("RangeAnim{");
+        final StringBuilder sb = new StringBuilder("RangeAnimation{");
         sb.append("id='").append(id).append('\'');
         sb.append(", highInputValue='").append(highInputValue).append('\'');
         sb.append(", maxOutputValue='").append(maxOutputValue).append('\'');
         sb.append(", lowInputValue='").append(lowInputValue).append('\'');
         sb.append(", minOutputValue='").append(minOutputValue).append('\'');
+        sb.append(", verticalFillDirection='").append(verticalFillDirection).append('\'');
+        sb.append(", signal: ").append(readableSignal());
         sb.append('}');
         return sb.toString();
+    }
+
+    private String readableSignal() {
+        if (expression == null) {
+            return "[NULL EXPRESSION]";
+        } else {
+            AnimationMath math = expression.math;
+            if (math == null) {
+                return "[NULL EXPRESSION.MATH]";
+            } else {
+                AnimationSemantics semantics = math.semantics;
+                if (semantics == null) {
+                    return "[NULL EXPRESSION.MATH.SEMANTICS]";
+                } else {
+                    AnimationSemantics.Apply apply = semantics.apply;
+                    if (apply == null) return "NULL EXPRESSION.MATH.SEMANTICS.apply";
+
+                    String signal = apply.associatedSignal;
+                    if (signal == null || signal.isEmpty()) {
+                        return "empty signal";
+                    } else return signal;
+                }
+            }
+        }
     }
 
     public String getSignalName() {
@@ -45,7 +71,11 @@ public class RangeAnimation {
             AnimationMath math = expression.math;
             if (math != null) {
                 AnimationSemantics semantics = math.semantics;
-                signal = semantics.associatedSignal;
+                AnimationSemantics.Apply apply = semantics.apply;
+                if (apply!=null){
+
+                    signal = apply.associatedSignal;
+                }
             }
         }
         return signal.replace("FIX32.", "");

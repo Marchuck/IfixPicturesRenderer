@@ -12,7 +12,7 @@ public class ItemValueResult {
      * MOST IMPORTANT
      */
     public String m_itemName;
-    public Double m_value;
+    public String m_value;
 
 
     public OpcDaResult m_resultID;
@@ -30,7 +30,7 @@ public class ItemValueResult {
 
     public static ItemValueResult mock() {
         ItemValueResult item = new ItemValueResult();
-        item.m_value = 50.0;
+        item.m_value = "50.0";
         item.m_itemName = "MOCK ITEM";
         return item;
     }

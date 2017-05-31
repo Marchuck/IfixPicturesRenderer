@@ -72,7 +72,13 @@ public class SynopticView extends View {
                 if (data instanceof DataRect) {
 
                     if (((DataRect) data).dataConnector.equalsIgnoreCase(r.m_itemName)) {
-                        ((DataRect) data).setCurrentValue(r.m_value);
+
+                        double value = 0.0;
+                        try{
+                            value = Double.valueOf(r.m_value.trim().replace(",","."));
+                        }catch (NumberFormatException x){}
+
+                        ((DataRect) data).setCurrentValue(value);
                         Log.i(TAG, "invalidateData: " + r.m_itemName + ", " + r.m_value);
                     }
                 }

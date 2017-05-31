@@ -7,16 +7,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import io.reactivex.Observer
+import io.reactivex.SingleObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.observers.DisposableObserver
 import org.jetbrains.anko.support.v4.find
-import pl.marczak.ifixpicturesrenderer.R
-import pl.marczak.ifixpicturesrenderer.model.IfixPicture
-
 import pl.marczak.ifixpicturesrenderer.MainActivity
+import pl.marczak.ifixpicturesrenderer.R
 import pl.marczak.ifixpicturesrenderer.codebase.BaseFragment
 import pl.marczak.ifixpicturesrenderer.connection.opc_da_model.ItemValueResult
-import pl.marczak.ifixpicturesrenderer.model.data.AbstractData
+import pl.marczak.ifixpicturesrenderer.model.IfixPicture
 import pl.marczak.ifixpicturesrenderer.model.data.DataRect
 import pl.marczak.ifixpicturesrenderer.model.data.SynopticView
+import pl.marczak.ifixpicturesrenderer.parsing.XmlParseResponse
+import java.util.concurrent.TimeUnit
 
 
 class IfixScreenFragment : BaseFragment<MainActivity>(), IfixScreenView {
@@ -56,16 +61,19 @@ class IfixScreenFragment : BaseFragment<MainActivity>(), IfixScreenView {
         )
         endpointEditText = find<EditText>(R.id.endpointEditText)
         endpointEditText?.setText(parentActivity.opcDaClient.currentEndpoint)
+
         enable_switch = find<Switch>(R.id.enable_switch)
         progressBar = find<ProgressBar>(R.id.progressBar)
 
         enable_switch?.setOnClickListener {
 
-           // enable_switch?.isChecked = !enable_switch?.isChecked!!
+            // enable_switch?.isChecked = !enable_switch?.isChecked!!
 
             if (enable_switch?.isChecked!!) {
+                Toast.makeText(activity, "updates enabled", Toast.LENGTH_SHORT).show()
                 presenter?.requestUpdates()
             } else {
+                Toast.makeText(activity, "updates disabled", Toast.LENGTH_SHORT).show()
                 presenter?.stopUpdates()
             }
         }
@@ -87,7 +95,7 @@ class IfixScreenFragment : BaseFragment<MainActivity>(), IfixScreenView {
 
     override fun onPictureReceived(obj: IfixPicture) {
 
-        Log.d(TAG, "onPictureReceived")
+        Log.d(TAG, "onPictureReceived: " + obj?.toString())
 
         val screen = obj.createScreen()
 
@@ -128,9 +136,26 @@ class IfixScreenFragment : BaseFragment<MainActivity>(), IfixScreenView {
         contentView = find<RelativeLayout>(R.id.contentView)
         contentView?.removeAllViews()
         contentView?.addView(rootLayout)
+
+        presenter!!.newResults.throttleFirst(200, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableObserver<List<ItemValueResult>>() {
+                    override fun onComplete() {
+                    }
+
+                    override fun onNext(value: List<ItemValueResult>) {
+                        Log.d(TAG, "onNext " + value.size)
+                        synopticView?.invalidateData(value)
+                    }
+
+                    override fun onError(e: Throwable) {
+
+                    }
+                })
     }
 
     override fun onPictureRecycle(value: List<ItemValueResult>) {
+        Log.i(TAG, "onPictureRecycle[" + value.size + " items updated]")
         synopticView?.post {
             synopticView?.invalidateData(value)
         }

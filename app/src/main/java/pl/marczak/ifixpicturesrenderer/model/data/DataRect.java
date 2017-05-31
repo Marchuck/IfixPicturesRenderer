@@ -5,8 +5,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 
-import org.xml.sax.Attributes;
-
 import java.util.List;
 
 import pl.marczak.ifixpicturesrenderer.model.Binding;
@@ -35,16 +33,17 @@ public class DataRect implements AbstractData {
         setColor(Color.LTGRAY);
     }};
     public RangeAnim rangeAnimation;
-    public volatile double fulfillment = 1.0; // between 0 and 1
+    public volatile double fulfillment = .0; // between 0 and 1
     public float rotation;
     public String id;
     public String dataConnector = "";
-    public boolean bottomUp;
+    public boolean bottomToTop;
     private Paint paint;
 
     public DataRect(String name, int width, int height, int x, int y,
                     int strokeWidth, String stroke, String fill, String backgroundFill) {
         this.name = name;
+        this.id = name;
         this.width = width;
         this.height = height;
         this.x = x;
@@ -55,30 +54,6 @@ public class DataRect implements AbstractData {
         this.backgroundFill = backgroundFill;
     }
 
-    public DataRect(String qName, Attributes attributes) {
-        name = qName;
-        id = attributes.getValue("id");
-        String widthAsString = attributes.getValue("width");
-        width = Integer.parseInt(widthAsString);
-        String heightAsString = attributes.getValue("height");
-        height = Integer.parseInt(heightAsString);
-        String xAsString = attributes.getValue("x");
-        x = Integer.parseInt(xAsString);
-        String yAsString = attributes.getValue("y");
-        y = Integer.parseInt(yAsString);
-        String[] rotationAsString = attributes.getValue("transform")
-                .replace("rotate(", "").replace(")", "").split(",");
-        rotation = Float.parseFloat(rotationAsString[0].replace("deg", ""));
-
-        fill = attributes.getValue("fill");
-
-        backgroundFill = attributes.getValue("background-fill");
-
-        stroke = attributes.getValue("stroke");
-
-        String strokeWidthAsString = attributes.getValue("stroke-width");
-        strokeWidth = Integer.parseInt(strokeWidthAsString);
-    }
 
     public void setCurrentValue(double newValue) {
 
@@ -102,7 +77,7 @@ public class DataRect implements AbstractData {
     @Override public void drawSelf(Canvas canvas) {
 
 
-        if (!bottomUp) {
+        if (!bottomToTop) {
 
             canvas.drawRect(x * scale, y * scale,
                     (x + width) * scale, (y + height) * scale,
@@ -160,6 +135,28 @@ public class DataRect implements AbstractData {
         return result;
     }
 
+    @Override public String toString() {
+        return "DataRect{" +
+                "name='" + name + '\'' +
+                ", width=" + width +
+                ", height=" + height +
+                ", x=" + x +
+                ", y=" + y +
+                ", strokeWidth=" + strokeWidth +
+                ", stroke='" + stroke + '\'' +
+                ", fill='" + fill + '\'' +
+                ", backgroundFill='" + backgroundFill + '\'' +
+                ", backgroundPaint=" + backgroundPaint.getColor() +
+                ", rangeAnimation=" + rangeAnimation +
+                ", fulfillment=" + fulfillment +
+                ", rotation=" + rotation +
+                ", id='" + id + '\'' +
+                ", dataConnector='" + dataConnector + '\'' +
+                ", bottomToTop=" + bottomToTop +
+                ", paint=" + paint +
+                '}';
+    }
+
     public static DataRect create(Rectangle rekt, ForeignObject foreignObject) {
         int width = Integer.valueOf(rekt.width);
         int height = Integer.valueOf(rekt.height);
@@ -180,24 +177,25 @@ public class DataRect implements AbstractData {
         //example binding:
         // bindKey= Rect1 : bindValue= Linear3
         for (Binding b : bindings.bindingList) {
-            if (b.bindKey.equals(rectangleId)) {
+            if (b.bindKey.equalsIgnoreCase(rect.id)) {
+                Log.e(TAG, "found rect  " + rect.id);
                 String animationKey = b.bindValue;
 
                 for (RangeAnimation anim : anims) {
                     if (anim.id.equalsIgnoreCase(animationKey)) {
                         //gotcha!
                         RangeAnim animation = new RangeAnim(anim);
-                        rect.bottomUp = anim.verticalFillDirection.equalsIgnoreCase("bottomToUp");
+                        rect.bottomToTop = anim.verticalFillDirection.equalsIgnoreCase("bottomToTop");
                         rect.rangeAnimation = animation;
                         rect.dataConnector = anim.getSignalName();
-                        Log.i(TAG, "create: " + rect.dataConnector);
+                        //Log.i(TAG, "create: " + rect.dataConnector);
                         break;
                     }
                 }
                 break;
             }
         }
-
+        Log.w(TAG, "create: rectangle with bound signals: " + rect.toString());
         return rect;
     }
 }

@@ -18,6 +18,6 @@ public class Animations {
     @SerializedName("gef:rangeAnimation")public List<RangeAnimation> rangeAnimation = new ArrayList<>();
 
     @Override public String toString() {
-        return "Animations{" + "rangeAnimation=" + Arrays.toString(rangeAnimation.toArray()) + '}';
+        return  Arrays.toString(rangeAnimation.toArray());
     }
 }

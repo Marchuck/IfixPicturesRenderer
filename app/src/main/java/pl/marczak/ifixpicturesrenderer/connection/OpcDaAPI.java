@@ -2,6 +2,7 @@ package pl.marczak.ifixpicturesrenderer.connection;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import pl.marczak.ifixpicturesrenderer.connection.opc_da_model.Image;
 import pl.marczak.ifixpicturesrenderer.connection.opc_da_model.ItemValueResult;
@@ -19,7 +20,7 @@ public interface OpcDaAPI {
 
 
     @GET("api/OpcDa/")
-    Single<List<ItemValueResult>> getWorkspace();
+    Observable<List<ItemValueResult>> getWorkspace();
 
     @GET("api/OpcDa/")
     Single<List<ItemValueResult>> browseWorkspaceNodes(@Query("id") String nodePath);

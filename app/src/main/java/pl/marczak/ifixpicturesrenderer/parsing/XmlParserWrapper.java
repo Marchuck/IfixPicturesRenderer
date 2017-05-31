@@ -38,7 +38,7 @@ public class XmlParserWrapper {
         InputStreamReader iStreamReader = new InputStreamReader(iStream);
         //build a buffered Reader, so that i can read whole line at once
         BufferedReader bReader = new BufferedReader(iStreamReader);
-        String line = null;
+        String line;
         StringBuilder builder = new StringBuilder();
         while ((line = bReader.readLine()) != null) {  //Read till end
             builder.append(line);
@@ -73,7 +73,7 @@ public class XmlParserWrapper {
         return baos;
     }
 
-    @NonNull
+    @NonNull @Deprecated
     public <T> XmlParseResponse<T> parse(AssetManager manager, String filePath, Class<T> destinationClass) {
 
         InputStream is = null;
@@ -81,7 +81,6 @@ public class XmlParserWrapper {
         try {
             is = manager.open(filePath);
             String str = readFullyAsString(is, "UTF-8");
-
 
             synopticScreen = parse(str, destinationClass);
         } catch (IOException e) {
@@ -99,19 +98,19 @@ public class XmlParserWrapper {
     }
 
     @NonNull public <T> XmlParseResponse<T> parse(String xml, Class<T> destinationClass) {
-        Log.d(TAG, "parse: " + xml);
-        XmlParserCreator parserCreator =
-                new XmlParserCreator() {
-                    @Override public XmlPullParser createParser() {
-                        try {
-                            return XmlPullParserFactory.newInstance().newPullParser();
-                        } catch (XmlPullParserException e) {
-                            throw new IllegalStateException(e);
-                        }
-                    }
-                };
+       // Log.d(TAG, "parse: " + xml);
+        XmlParserCreator parserCreator = new XmlParserCreator() {
+            @Override public XmlPullParser createParser() {
+                try {
+                    return XmlPullParserFactory.newInstance().newPullParser();
+                } catch (XmlPullParserException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        };
 
-        GsonXml gsonXml = new GsonXmlBuilder().setXmlParserCreator(parserCreator)
+        GsonXml gsonXml = new GsonXmlBuilder()
+                .setXmlParserCreator(parserCreator)
                 .setPrimitiveArrays(true)
                 .setSameNameLists(true)
                 .create();
@@ -120,13 +119,12 @@ public class XmlParserWrapper {
 
             T model = gsonXml.fromXml(xml, destinationClass);
             if (model == null) {
-                return new XmlParseResponse<T>("nullable response");
+                return new XmlParseResponse<>("nullable response");
             } else {
-                return new XmlParseResponse<T>(model);
+                return new XmlParseResponse<>(model);
             }
         } catch (JsonSyntaxException x) {
-            return new XmlParseResponse<T>("error: " + x.getMessage());
+            return new XmlParseResponse<>("error: " + x.getMessage());
         }
     }
-
 }

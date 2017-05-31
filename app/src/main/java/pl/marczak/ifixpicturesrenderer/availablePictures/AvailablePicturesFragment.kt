@@ -1,6 +1,7 @@
 package pl.marczak.ifixpicturesrenderer.availablePictures
 
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.widget.SwipeRefreshLayout
 import pl.marczak.ifixpicturesrenderer.codebase.BaseFragment
 import pl.marczak.ifixpicturesrenderer.MainActivity
@@ -60,8 +61,14 @@ class AvailablePicturesFragment : BaseFragment<MainActivity>(), AvailablePicture
     }
 
     override fun onPicturesReceived(pictures: List<String>) {
-        adapter.refreshDataset(pictures)
-        swipeRefreshLayout?.post { swipeRefreshLayout?.isRefreshing = false }
+
+        if (pictures.isEmpty()) {
+            Snackbar.make(swipeRefreshLayout!!, "No pictures to show, try again later", Snackbar.LENGTH_SHORT).show()
+        } else {
+            adapter.refreshDataset(pictures)
+            swipeRefreshLayout?.post { swipeRefreshLayout?.isRefreshing = false }
+
+        }
     }
 
     override fun switchToPicture(picture: String) {
