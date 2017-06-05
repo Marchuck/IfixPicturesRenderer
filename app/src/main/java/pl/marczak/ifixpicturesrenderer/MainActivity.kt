@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
                 .beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.content_frame, f, tag)
+                .addToBackStack(null)
                 .commitAllowingStateLoss()
 
     }

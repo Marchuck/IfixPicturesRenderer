@@ -18,7 +18,6 @@ public class XmlParseResponse<T> {
     public XmlParseResponse(@NonNull T obj) {
         this.obj = obj;
         this.success = true;
-
     }
 
     public XmlParseResponse(String errorMessage) {

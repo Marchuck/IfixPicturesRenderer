@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
 public class IfixSvg {
 
     @SerializedName("svg")
-    public IfixPicture picture;
+    public SingleIfixPicture picture;
 
     @Override public String toString() {
         return "IfixSvg{" +

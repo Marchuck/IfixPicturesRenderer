@@ -19,17 +19,12 @@ import retrofit2.http.Query;
 public interface OpcDaAPI {
 
 
-    @GET("api/OpcDa/")
-    Observable<List<ItemValueResult>> getWorkspace();
+    @GET("api/OpcDa/") Observable<List<ItemValueResult>> getWorkspace();
 
-    @GET("api/OpcDa/")
-    Single<List<ItemValueResult>> browseWorkspaceNodes(@Query("id") String nodePath);
+    @GET("api/OpcDa/") Single<List<ItemValueResult>> browseWorkspaceNodes(@Query("id") String nodePath);
 
-    @GET("api/OpcDa/")
-    Single<List<String>> browseAvailablePictures(@Query("pictures") boolean pictures);
+    @GET("api/OpcDa/") Single<List<String>> browseAvailablePictures(@Query("pictures") boolean pictures);
 
-    @GET("api/OpcDa/")
-    Single<Image> getPicture(@Query("pictureId") String pictureId);
-
+    @GET("api/OpcDa/") Single<Image> getPicture(@Query("pictureId") String pictureId);
 
 }

@@ -7,20 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import io.reactivex.Observer
-import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import org.jetbrains.anko.support.v4.find
 import pl.marczak.ifixpicturesrenderer.MainActivity
 import pl.marczak.ifixpicturesrenderer.R
 import pl.marczak.ifixpicturesrenderer.codebase.BaseFragment
 import pl.marczak.ifixpicturesrenderer.connection.opc_da_model.ItemValueResult
-import pl.marczak.ifixpicturesrenderer.model.IfixPicture
+import pl.marczak.ifixpicturesrenderer.model.SingleIfixPicture
 import pl.marczak.ifixpicturesrenderer.model.data.DataRect
+import pl.marczak.ifixpicturesrenderer.model.data.IfixScreen
 import pl.marczak.ifixpicturesrenderer.model.data.SynopticView
-import pl.marczak.ifixpicturesrenderer.parsing.XmlParseResponse
 import java.util.concurrent.TimeUnit
 
 
@@ -90,14 +87,18 @@ class IfixScreenFragment : BaseFragment<MainActivity>(), IfixScreenView {
     }
 
     override fun onPictureError() {
-        progressBar?.post { progressBar?.visibility = View.GONE }
+        progressBar?.post {
+            progressBar?.visibility = View.GONE
+
+            Toast.makeText(progressBar?.context, "Failed download picture", Toast.LENGTH_SHORT).show()
+        }
+
+
     }
 
-    override fun onPictureReceived(obj: IfixPicture) {
+    override fun onPictureReceived(screen: IfixScreen) {
 
-        Log.d(TAG, "onPictureReceived: " + obj?.toString())
-
-        val screen = obj.createScreen()
+        Log.d(TAG, "onPictureReceived: " + screen)
 
         (screen.children)?.let {
             for (data in screen.children) {
@@ -159,6 +160,13 @@ class IfixScreenFragment : BaseFragment<MainActivity>(), IfixScreenView {
         synopticView?.post {
             synopticView?.invalidateData(value)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter?.onDestroy()
+        presenter = null
+
     }
 
     companion object {

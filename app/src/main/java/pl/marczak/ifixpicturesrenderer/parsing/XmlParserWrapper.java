@@ -9,6 +9,8 @@ import com.stanfy.gsonxml.GsonXml;
 import com.stanfy.gsonxml.GsonXmlBuilder;
 import com.stanfy.gsonxml.XmlParserCreator;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -18,6 +20,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import pl.marczak.ifixpicturesrenderer.model.Pictureable;
 
 /**
  * Project "SynopticScreens"
@@ -97,8 +104,28 @@ public class XmlParserWrapper {
         return synopticScreen;
     }
 
+
+    @NonNull
+    public XmlParseResponse<?> parse(String xml, ArrayList<Class<? extends Pictureable>> candidates) {
+        if (candidates == null || candidates.size() == 0) {
+            throw new IllegalArgumentException("CANNOT BE EMPTY!");
+        }
+        if (candidates.size() == 1) {
+            return parse(xml, candidates.get(0));
+        }
+
+        XmlParseResponse<? extends Pictureable> response = null;
+        for (Class<? extends Pictureable> klazz : candidates) {
+            response = parse(xml, klazz);
+            if (response.isSuccesful()) return response;
+        }
+        return response;
+
+    }
+
     @NonNull public <T> XmlParseResponse<T> parse(String xml, Class<T> destinationClass) {
-       // Log.d(TAG, "parse: " + xml);
+        Log.d(TAG, "parse: " + xml);
+//        xml = xml.replaceAll()
         XmlParserCreator parserCreator = new XmlParserCreator() {
             @Override public XmlPullParser createParser() {
                 try {
@@ -127,4 +154,5 @@ public class XmlParserWrapper {
             return new XmlParseResponse<>("error: " + x.getMessage());
         }
     }
+
 }

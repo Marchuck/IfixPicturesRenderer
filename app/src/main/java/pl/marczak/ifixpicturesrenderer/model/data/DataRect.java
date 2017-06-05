@@ -12,6 +12,7 @@ import pl.marczak.ifixpicturesrenderer.model.Bindings;
 import pl.marczak.ifixpicturesrenderer.model.ForeignObject;
 import pl.marczak.ifixpicturesrenderer.model.RangeAnimation;
 import pl.marczak.ifixpicturesrenderer.model.Rectangle;
+import pl.marczak.ifixpicturesrenderer.model.newAge.PumpForeignObject;
 
 import static pl.marczak.ifixpicturesrenderer.model.data.SynopticView.scale;
 
@@ -67,7 +68,13 @@ public class DataRect implements AbstractData {
         this.paint = new Paint();
         try {
             Log.i(TAG, "initSelf: " + fill);
-            paint.setColor(Color.parseColor(fill));
+            int color;
+            try {
+                color = Color.parseColor(fill);
+            } catch (Exception x) {
+                color = Color.MAGENTA;
+            }
+            paint.setColor(color);
             paint.setStrokeWidth(strokeWidth);
         } catch (IllegalArgumentException exception) {
             Log.e(TAG, "initSelf: ", exception);
@@ -155,6 +162,49 @@ public class DataRect implements AbstractData {
                 ", bottomToTop=" + bottomToTop +
                 ", paint=" + paint +
                 '}';
+    }
+
+    public static DataRect create(Rectangle rekt, PumpForeignObject foreignObject) {
+
+        int width = Integer.valueOf(rekt.width);
+        int height = Integer.valueOf(rekt.height);
+        int x = Integer.valueOf(rekt.x);
+        int y = Integer.valueOf(rekt.y);
+
+        String rectangleId = rekt.id; //Rect1 for example
+
+        Bindings bindings = foreignObject.bindings;
+
+        List<RangeAnimation> anims = foreignObject.auxiliaryObjects.animations.rangeAnimation;
+
+        DataRect rect = new DataRect(rectangleId, width, height,
+                x, y, rekt.strokeWidth,
+                rekt.stroke, rekt.fill, rekt.backgroundFill);
+
+
+        //example binding:
+        // bindKey= Rect1 : bindValue= Linear3
+        for (Binding b : bindings.bindingList) {
+            if (b.bindKey.equalsIgnoreCase(rect.id)) {
+                Log.e(TAG, "found rect  " + rect.id);
+                String animationKey = b.bindValue;
+
+                for (RangeAnimation anim : anims) {
+                    if (anim.id.equalsIgnoreCase(animationKey)) {
+                        //gotcha!
+                        RangeAnim animation = new RangeAnim(anim);
+                        rect.bottomToTop = anim.verticalFillDirection.equalsIgnoreCase("bottomToTop");
+                        rect.rangeAnimation = animation;
+                        rect.dataConnector = anim.getSignalName();
+                        //Log.i(TAG, "create: " + rect.dataConnector);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        Log.w(TAG, "create: rectangle with bound signals: " + rect.toString());
+        return rect;
     }
 
     public static DataRect create(Rectangle rekt, ForeignObject foreignObject) {

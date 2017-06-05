@@ -2,7 +2,8 @@ package pl.marczak.ifixpicturesrenderer.ifixPicture
 
 import pl.marczak.ifixpicturesrenderer.codebase.Loadable
 import pl.marczak.ifixpicturesrenderer.connection.opc_da_model.ItemValueResult
-import pl.marczak.ifixpicturesrenderer.model.IfixPicture
+import pl.marczak.ifixpicturesrenderer.model.SingleIfixPicture
+import pl.marczak.ifixpicturesrenderer.model.data.IfixScreen
 
 /**
  * Project "IfixPicturesRenderer"
@@ -14,7 +15,7 @@ interface IfixScreenView : Loadable {
 
     fun onPictureError()
 
-    fun onPictureReceived(obj: IfixPicture)
+    fun onPictureReceived(screen: IfixScreen)
 
     fun  onPictureRecycle(value: List<ItemValueResult>)
 

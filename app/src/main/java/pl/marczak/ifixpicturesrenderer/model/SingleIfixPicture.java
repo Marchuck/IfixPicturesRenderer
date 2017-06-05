@@ -2,6 +2,9 @@ package pl.marczak.ifixpicturesrenderer.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pl.marczak.ifixpicturesrenderer.model.data.DataRect;
 import pl.marczak.ifixpicturesrenderer.model.data.IfixScreen;
 
@@ -13,7 +16,7 @@ import pl.marczak.ifixpicturesrenderer.model.data.IfixScreen;
  * on 30.04.2017.
  */
 
-public class IfixPicture {
+public class SingleIfixPicture implements Pictureable{
     @SerializedName("@width") public String width;
 
     @SerializedName("@height") public String height;
@@ -28,36 +31,37 @@ public class IfixPicture {
 
     @SerializedName("gef:author") public String author;
 
-    @SerializedName(value = "g") public Graph graph;
+    @SerializedName(value = "g") public Graph graphs;
 
     @SerializedName(value = "foreignObject") public ForeignObject foreignObject;
 
     @Override public String toString() {
-        return "IfixPicture{" +
+        return "SingleIfixPicture{" +
                 "width='" + width + '\'' +
                 ", height='" + height + '\'' +
                 ", newWidth='" + newWidth + '\'' +
                 ", newHeight='" + newHeight + '\'' +
                 ", author='" + author + '\'' +
-                ", graph=" + graph +
+                ", graphs=" + graphs +
                 ",\n foreignObject=" + foreignObject +
                 '}';
     }
 
-    public IfixScreen createScreen() {
+    @Override public IfixScreen createScreen() {
         IfixScreen screen = new IfixScreen("iFix", null);
         screen.width = Integer.valueOf(width);
         screen.height = Integer.valueOf(width);
         screen.backgroundFill = backgroundFill;
 
 
-        if (graph != null) {
-            for (Rectangle rekt :graph.rectangles){
+        if (graphs != null) {
+
+            for (Rectangle rekt : graphs.rectangles){
                 DataRect dataRect =  DataRect.create(rekt,foreignObject);
                 screen.addRect(dataRect);
             }
             //// TODO: 25.05.2017 add dataLinks
-//            for (DataLink dataLink : graph.dataLinks) {
+//            for (DataLink dataLink : graphs.dataLinks) {
 //                screen.addChild(dataLink.create());
 //            }
         }
