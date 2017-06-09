@@ -27,7 +27,7 @@ import pl.marczak.ifixpicturesrenderer.parsing.XmlParserWrapper
 class IfixScreenPresenter(view: IfixScreenView?, restClient: OpcDaClient, parser: XmlParserWrapper) {
 
     companion object {
-        val TAG = "IfixScreenPresenter"
+        val TAG = IfixScreenPresenter::class.java.simpleName
     }
 
     val newResults: PublishSubject<List<ItemValueResult>> = PublishSubject.create()
@@ -47,7 +47,6 @@ class IfixScreenPresenter(view: IfixScreenView?, restClient: OpcDaClient, parser
 
     fun createScreen(response: XmlParseResponse<*>): IfixScreen? {
 
-
         if (response.isSuccesful && response.obj is Pictureable) {
 
             val screen = (response.obj as Pictureable).createScreen()
@@ -61,6 +60,7 @@ class IfixScreenPresenter(view: IfixScreenView?, restClient: OpcDaClient, parser
 
     fun fetchPicture(name: String) {
 
+        Log.w(TAG,"fetchPicture")
 
         restClient.getPicture(name)
                 .doOnSubscribe {

@@ -9,16 +9,17 @@ import pl.marczak.ifixpicturesrenderer.R
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Toast
 import org.jetbrains.anko.support.v4.find
 import pl.marczak.ifixpicturesrenderer.ifixPicture.IfixScreenFragment
 
 
 typealias FIX = IfixScreenFragment
 class AvailablePicturesFragment : BaseFragment<MainActivity>(), AvailablePicturesView {
-
 
     internal val adapter: AvailablePicturesAdapter = AvailablePicturesAdapter()
     internal var recyclerView: RecyclerView? = null
@@ -38,9 +39,9 @@ class AvailablePicturesFragment : BaseFragment<MainActivity>(), AvailablePicture
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        presenter = AvailablePicturesPresenter(view = this, restClient = parentActivity.opcDaClient)
+        presenter = AvailablePicturesPresenter(restClient = parentActivity.opcDaClient)
+        presenter?.view = this
         setupViews()
-        presenter?.requestForPictures()
     }
 
     private fun setupViews() {
@@ -62,13 +63,20 @@ class AvailablePicturesFragment : BaseFragment<MainActivity>(), AvailablePicture
 
     override fun onPicturesReceived(pictures: List<String>) {
 
+        Log.d(TAG, "onPicturesReceived")
+
         if (pictures.isEmpty()) {
             Snackbar.make(swipeRefreshLayout!!, "No pictures to show, try again later", Snackbar.LENGTH_SHORT).show()
         } else {
             adapter.refreshDataset(pictures)
-            swipeRefreshLayout?.post { swipeRefreshLayout?.isRefreshing = false }
-
         }
+        swipeRefreshLayout?.post { swipeRefreshLayout?.isRefreshing = false }
+
+    }
+
+    override fun onPicturesError() {
+        Log.d(TAG, "onPicturesError")
+        onPicturesReceived(emptyList())
     }
 
     override fun switchToPicture(picture: String) {
@@ -86,7 +94,7 @@ class AvailablePicturesFragment : BaseFragment<MainActivity>(), AvailablePicture
     }
 
     companion object {
-        val TAG = "AvailablePicturesFragment"
+        val TAG = AvailablePicturesFragment.javaClass.simpleName
 
         fun newInstance(): AvailablePicturesFragment {
             val fragment = AvailablePicturesFragment()

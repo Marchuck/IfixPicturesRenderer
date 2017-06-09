@@ -13,4 +13,6 @@ interface AvailablePicturesView : Loadable{
     fun onPicturesReceived(pictures: List<String>)
 
     fun switchToPicture(picture: String)
+
+    fun onPicturesError()
 }
