@@ -46,8 +46,7 @@ class AvailablePicturesPresenter : AvailablePicturesAdapter.ClickListener {
         Log.d(TAG, "subscribeView")
 
         picturesAvailable.doOnSubscribe { view?.onLoadStart() }
-                .observeOn(AndroidSchedulers.mainThread())
-                //.compose(RxCommons.applySchedulers2())
+                 .compose(RxCommons.applySchedulers2())
                 .doFinally { view?.onLoadEnd() }
                 .subscribe(object : Observer<List<String>> {
                     override fun onSubscribe(d: Disposable) {

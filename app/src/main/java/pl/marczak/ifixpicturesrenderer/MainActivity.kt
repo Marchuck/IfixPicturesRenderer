@@ -2,6 +2,8 @@ package pl.marczak.ifixpicturesrenderer
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import pl.marczak.ifixpicturesrenderer.availablePictures.AvailablePicturesFragment
 import pl.marczak.ifixpicturesrenderer.connection.OpcDaClient
@@ -23,12 +25,26 @@ class MainActivity : AppCompatActivity() {
 
     fun switchToFragment(f: Fragment, tag: String) {
 
-        supportFragmentManager
-                .beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+        val transaction = supportFragmentManager.beginTransaction()
+
+        transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.content_frame, f, tag)
-                .addToBackStack(null)
-                .commitAllowingStateLoss()
+
+        if (supportFragmentManager.hasAnyFragment()) {
+            transaction.addToBackStack(null)
+        }
+
+        transaction.commitAllowingStateLoss()
 
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
 }
+
+private fun FragmentManager.hasAnyFragment(): Boolean {
+    val size = this.fragments?.count() ?: 0
+    return size > 0
+}
+

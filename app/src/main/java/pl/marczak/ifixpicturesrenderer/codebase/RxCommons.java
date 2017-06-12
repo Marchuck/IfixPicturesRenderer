@@ -22,7 +22,7 @@ public class RxCommons {
         return new SingleTransformer<C, C>() {
             @Override public SingleSource<C> apply(Single<C> upstream) {
                 return upstream
-                        //.subscribeOn(Schedulers.newThread())
+                        .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread());
             }
         };
@@ -32,7 +32,7 @@ public class RxCommons {
         return new ObservableTransformer<C, C>() {
             @Override public ObservableSource<C> apply(Observable<C> upstream) {
                 return upstream
-                        //.subscribeOn(Schedulers.newThread())
+                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread());
             }
         };

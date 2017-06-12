@@ -134,7 +134,7 @@ public class OpcDaClient {
     }
 
     public Single<Image> getPicture(String name) {
-
+        Log.w(TAG, "getPicture: " + name);
         return Observable.merge(
                 databaseImage(name), internetImage(name)
         ).firstOrError();
@@ -152,8 +152,9 @@ public class OpcDaClient {
                         AvailablePic pic = realm.where(AvailablePic.class)
                                 .equalTo("name", name, Case.INSENSITIVE).findFirst();
                         if (pic != null) {
+                            if (pic.getContent() == null) return;
                             Image image = new Image(pic.getName(), pic.getContent());
-                            Log.d(TAG,"databaseImage");
+                            Log.d(TAG, "databaseImage");
                             e.onNext(image);
                         }
                     }
@@ -183,7 +184,7 @@ public class OpcDaClient {
                     });
                     realm.close();
                 }
-                Log.d(TAG,"internetImage");
+                Log.d(TAG, "internetImage");
 
                 return image;
             }
