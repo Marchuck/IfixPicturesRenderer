@@ -12,6 +12,7 @@ import io.reactivex.observers.DisposableObserver
 import org.jetbrains.anko.support.v4.find
 import pl.marczak.ifixpicturesrenderer.MainActivity
 import pl.marczak.ifixpicturesrenderer.R
+import pl.marczak.ifixpicturesrenderer.Utils
 import pl.marczak.ifixpicturesrenderer.codebase.BaseFragment
 import pl.marczak.ifixpicturesrenderer.connection.opc_da_model.ItemValueResult
 import pl.marczak.ifixpicturesrenderer.model.SingleIfixPicture
@@ -75,7 +76,8 @@ class IfixScreenFragment : BaseFragment<MainActivity>(), IfixScreenView {
             }
         }
 
-        presenter?.fetchPicture(pictureName!!)
+//        presenter?.fetchPicture(pictureName!!)
+        presenter?.fetchPictureFromXml(Utils.image)
     }
 
     override fun onLoadStart() {

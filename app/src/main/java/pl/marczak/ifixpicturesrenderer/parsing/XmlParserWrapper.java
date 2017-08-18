@@ -2,6 +2,7 @@ package pl.marczak.ifixpicturesrenderer.parsing;
 
 import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.google.gson.JsonSyntaxException;
@@ -117,30 +118,65 @@ public class XmlParserWrapper {
         XmlParseResponse<? extends Pictureable> response = null;
         for (Class<? extends Pictureable> klazz : candidates) {
             response = parse(xml, klazz);
-            if (response.isSuccesful()) return response;
+            if (response.isSuccesful()) {
+                return response;
+            }
         }
         return response;
 
     }
 
-    @NonNull public <T> XmlParseResponse<T> parse(String xml, Class<T> destinationClass) {
-        Log.d(TAG, "parse: " + xml);
-//        xml = xml.replaceAll()
-        XmlParserCreator parserCreator = new XmlParserCreator() {
-            @Override public XmlPullParser createParser() {
-                try {
-                    return XmlPullParserFactory.newInstance().newPullParser();
-                } catch (XmlPullParserException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-        };
-
+    public static GsonXml provideGsonXml(XmlParserCreator parserCreator) {
         GsonXml gsonXml = new GsonXmlBuilder()
                 .setXmlParserCreator(parserCreator)
                 .setPrimitiveArrays(true)
                 .setSameNameLists(true)
                 .create();
+        return gsonXml;
+    }
+
+    public static XmlParserCreator provideXmlParserCreator() {
+        XmlParserCreator parserCreator = new XmlParserCreator() {
+            @Override public XmlPullParser createParser() {
+                try {
+                    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                    if (factory == null) {
+                        System.out.println("factory is null");
+                        return null;
+                    }
+                    return factory.newPullParser();
+                } catch (XmlPullParserException e) {
+                    System.err.println("XmlPullParserException: " + String.valueOf(e));
+                    throw new IllegalStateException(e);
+                }
+            }
+        };
+        return parserCreator;
+    }
+
+    @NonNull
+    public <T> XmlParseResponse<T> parse(String xml, Class<T> destinationClass) {
+        Log.d(TAG, "parse: " + xml);
+
+        GsonXml gsonXml = provideGsonXml(provideXmlParserCreator());
+
+        try {
+
+            T model = gsonXml.fromXml(xml, destinationClass);
+            if (model == null) {
+                return new XmlParseResponse<>("nullable response");
+            } else {
+                return new XmlParseResponse<>(model);
+            }
+        } catch (JsonSyntaxException x) {
+            return new XmlParseResponse<>("error: " + x.getMessage());
+        }
+    }
+
+    @VisibleForTesting
+    @NonNull
+    public <T> XmlParseResponse<T> parse(GsonXml gsonXml, String xml, Class<T> destinationClass) {
+        Log.d(TAG, "parse: " + xml);
 
         try {
 

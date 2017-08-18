@@ -27,6 +27,7 @@ public class DataLink {
     public @SerializedName("@background-fill") String backgroundFill;
     public @SerializedName("@transform") String transform;
 
+
     @Override public String toString() {
         return "DataLink{" +
                 " id='" + id + '\'' +

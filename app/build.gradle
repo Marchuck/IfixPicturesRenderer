@@ -20,6 +20,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    testOptions {
+
+        unitTests.returnDefaultValues = true
+
+        unitTests.all {
+            // All the usual Gradle options.
+            jvmArgs '-XX:MaxPermSize=256m'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError true
+    }
 }
 
 dependencies {

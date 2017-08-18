@@ -3,10 +3,12 @@ package pl.marczak.ifixpicturesrenderer.parsing;
 import android.app.Application;
 
 import com.google.gson.annotations.SerializedName;
+import com.stanfy.gsonxml.GsonXml;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -21,6 +23,14 @@ import static org.junit.Assert.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class XmlParserWrapperTest {
+
+    static GsonXml gsonXml;
+
+    @BeforeClass
+    public static void beforeTesting() {
+        gsonXml = XmlParserWrapper.provideGsonXml(XmlParserWrapper.provideXmlParserCreator());
+    }
+
 
     public static class Ci {
         @SerializedName("ci") String name;
@@ -61,7 +71,7 @@ public class XmlParserWrapperTest {
                 "<ci>FIX.32.FIX.GREEN.F_CV</ci>" +
                 "</apply>" +
                 "</semantics>";
-        XmlParseResponse<Semantics2> response = wrapper.parse(xml, Semantics2.class);
-        Assert.assertEquals(response.isSuccesful(),true);
+        XmlParseResponse<Semantics2> response = wrapper.parse(gsonXml, xml, Semantics2.class);
+        Assert.assertEquals(response.isSuccesful(), true);
     }
 }

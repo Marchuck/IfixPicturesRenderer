@@ -1,6 +1,8 @@
 package pl.marczak.ifixpicturesrenderer.ifixPicture
 
 import android.util.Log
+import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
@@ -60,7 +62,7 @@ class IfixScreenPresenter(view: IfixScreenView?, restClient: OpcDaClient, parser
 
     fun fetchPicture(name: String) {
 
-        Log.w(TAG,"fetchPicture")
+        Log.w(TAG, "fetchPicture")
 
         restClient.getPicture(name)
                 .doOnSubscribe {
@@ -73,6 +75,41 @@ class IfixScreenPresenter(view: IfixScreenView?, restClient: OpcDaClient, parser
                             SingleIfixPicture::class.java, PumpIfixPicture::class.java))
                 }
                 .map { fixPicture: XmlParseResponse<*> -> createScreen(fixPicture) }
+                .doFinally { view?.onLoadEnd() }
+                .subscribeWith(object : SingleObserver<IfixScreen?> {
+                    override fun onSubscribe(d: Disposable) {
+                        disposable = d
+                    }
+
+                    override fun onSuccess(value: IfixScreen?) {
+
+                        if (value != null) {
+                            view?.onPictureReceived(value)
+                            //view?.showRestOfTheLayout()
+                        } else {
+                            Log.e(TAG, "error: xmlParse response ")
+                            view?.onPictureError()
+                        }
+                    }
+
+                    override fun onError(e: Throwable) {
+                        Log.e(TAG, "error: " + e)
+                        view?.onPictureError()
+                    }
+                })
+
+    }
+
+    fun fetchPictureFromXml(xml: String) {
+
+        Log.w(TAG, "fetchPicture")
+
+        Single.just(
+
+                parser.parse(xml,
+                        arrayListOf(SingleIfixPicture::class.java, PumpIfixPicture::class.java))
+
+        ).map { fixPicture: XmlParseResponse<*> -> createScreen(fixPicture) }
                 .doFinally { view?.onLoadEnd() }
                 .subscribeWith(object : SingleObserver<IfixScreen?> {
                     override fun onSubscribe(d: Disposable) {

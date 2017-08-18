@@ -18,6 +18,10 @@ public class Graph {
 
     @SerializedName("rect") public List<Rectangle> rectangles = new ArrayList<>();
 
+    @SerializedName("use") public List<Use> uses = new ArrayList<>();
+
+    @SerializedName("text") public List<Text> texts = new ArrayList<>();
+
     @Override public String toString() {
         final StringBuilder sb = new StringBuilder("Graph{");
         sb.append("dataLinks: \n");
