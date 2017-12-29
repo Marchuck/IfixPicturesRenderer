@@ -7,12 +7,6 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import pl.marczak.ifixpicturesrenderer.connection.OpcDaClient;
 
-/**
- * Project "IfixPicturesRenderer"
- * <p>
- * Created by Lukasz Marczak
- * on 25.05.2017.
- */
 
 public class App extends Application {
 

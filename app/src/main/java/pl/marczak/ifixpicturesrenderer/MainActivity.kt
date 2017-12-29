@@ -38,9 +38,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
 }
 
 private fun FragmentManager.hasAnyFragment(): Boolean {

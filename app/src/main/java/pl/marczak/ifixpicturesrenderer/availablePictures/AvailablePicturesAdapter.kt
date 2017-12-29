@@ -1,12 +1,7 @@
 package pl.marczak.ifixpicturesrenderer.availablePictures
 
-/**
- * Project "IfixPicturesRenderer"
- *
- *
- * Created by Lukasz Marczak
- * on 25.05.2017.
- */
+
+import android.annotation.SuppressLint
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,13 +12,8 @@ import pl.marczak.ifixpicturesrenderer.R
 import java.util.ArrayList
 
 
-/**
- * @author Lukasz Marczak
- * *
- * @since 08.05.16.
- */
 class AvailablePicturesAdapter @JvmOverloads
-constructor(dataSet: List<String> = ArrayList<String>())
+constructor(dataSet: List<String> = ArrayList())
     : RecyclerView.Adapter<AvailablePicturesAdapter.ViewHolder>() {
 
     internal var dataSet: List<String>? = java.util.ArrayList()
@@ -44,6 +34,7 @@ constructor(dataSet: List<String> = ArrayList<String>())
         notifyDataSetChanged()
     }
 
+    @SuppressLint("InflateParams")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AvailablePicturesAdapter.ViewHolder {
         val v = android.view.LayoutInflater.from(parent.context).inflate(R.layout.drawer_list_item, null, false)
         return AvailablePicturesAdapter.ViewHolder(v)
@@ -59,9 +50,7 @@ constructor(dataSet: List<String> = ArrayList<String>())
         }
     }
 
-    override fun getItemCount(): Int {
-        return if (dataSet == null) 0 else dataSet!!.size
-    }
+    override fun getItemCount(): Int = if (dataSet == null) 0 else dataSet!!.size
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
 

@@ -3,14 +3,7 @@ package pl.marczak.ifixpicturesrenderer.codebase
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 
-/**
- * Project "IfixPicturesRenderer"
- *
- *
- * Created by Lukasz Marczak
- * on 25.05.2017.
- */
-
+@Suppress("UNCHECKED_CAST")
 abstract class BaseFragment<out T : FragmentActivity> : Fragment() {
 
     val parentActivity: T

@@ -136,7 +136,7 @@ class IfixScreenFragment : BaseFragment<MainActivity>(), IfixScreenView {
 
         rootLayout.addView(synopticView, LinearLayout.LayoutParams(-1, -1))
 
-        contentView = find<RelativeLayout>(R.id.contentView)
+        contentView = find(R.id.contentView)
         contentView?.removeAllViews()
         contentView?.addView(rootLayout)
 

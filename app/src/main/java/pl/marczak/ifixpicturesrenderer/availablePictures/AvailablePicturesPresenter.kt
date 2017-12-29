@@ -1,9 +1,7 @@
 package pl.marczak.ifixpicturesrenderer.availablePictures
 
 import android.util.Log
-import io.reactivex.Observer
 import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import pl.marczak.ifixpicturesrenderer.codebase.RxCommons
@@ -11,25 +9,12 @@ import pl.marczak.ifixpicturesrenderer.connection.OpcDaClient
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
-/**
- * Project "IfixPicturesRenderer"
- *
- * Created by Lukasz Marczak
- * on 25.05.2017.
- */
-
-class AvailablePicturesPresenter : AvailablePicturesAdapter.ClickListener {
+class AvailablePicturesPresenter(restClient: OpcDaClient) : AvailablePicturesAdapter.ClickListener {
 
     val TAG = AvailablePicturesPresenter::class.java.simpleName
-    val client: OpcDaClient
+    val client: OpcDaClient = restClient
 
-    constructor(restClient: OpcDaClient) {
-        this.client = restClient
-        requestForPictures()
-    }
-
-    var viewDisposable: Disposable? = null
+    var viewDisposable: Disposable? = null;
 
     var picturesAvailable: BehaviorSubject<List<String>> = BehaviorSubject.create()
 
@@ -41,31 +26,25 @@ class AvailablePicturesPresenter : AvailablePicturesAdapter.ClickListener {
             field = value
         }
 
+    init {
+        requestForPictures()
+    }
+
     private fun subscribeView(view: AvailablePicturesView?) {
 
         Log.d(TAG, "subscribeView")
 
-        picturesAvailable.doOnSubscribe { view?.onLoadStart() }
-                 .compose(RxCommons.applySchedulers2())
+        view?.onLoadStart()
+
+        viewDisposable = picturesAvailable
+                .compose(RxCommons.applyObservableSchedulers())
                 .doFinally { view?.onLoadEnd() }
-                .subscribe(object : Observer<List<String>> {
-                    override fun onSubscribe(d: Disposable) {
-                        viewDisposable = d
-                    }
-
-                    override fun onError(e: Throwable) {
-                        Log.e("ReposPresenter", "Error", e)
-                        view?.onPicturesError()
-                    }
-
-                    override fun onNext(pictures: List<String>) {
-                        Log.d(TAG, "onNext" + Arrays.toString(pictures.toTypedArray()))
-
-                        view?.onPicturesReceived(pictures)
-                    }
-
-                    override fun onComplete() {
-                    }
+                .subscribe({
+                    Log.d(TAG, "onNext" + Arrays.toString(it.toTypedArray()))
+                    view?.onPicturesReceived(it)
+                }, {
+                    Log.e("ReposPresenter", "Error", it)
+                    view?.onPicturesError()
                 })
     }
 
@@ -75,7 +54,7 @@ class AvailablePicturesPresenter : AvailablePicturesAdapter.ClickListener {
         Log.d(TAG, "requestForPictures")
 
         client.availablePictures
-                .compose(RxCommons.applySchedulers())
+                .compose(RxCommons.applySingleSchedulers())
                 .timeout(7, TimeUnit.SECONDS)
                 .doFinally { view?.onLoadEnd() }
                 .subscribe(object : SingleObserver<List<String>> {
@@ -86,7 +65,6 @@ class AvailablePicturesPresenter : AvailablePicturesAdapter.ClickListener {
 
                     override fun onError(e: Throwable?) {
                         Log.d(TAG, "onError")
-
                         picturesAvailable.onError(e)
                     }
 
@@ -96,9 +74,7 @@ class AvailablePicturesPresenter : AvailablePicturesAdapter.ClickListener {
                 })
     }
 
-
     override fun onClicked(title: String) {
         view?.switchToPicture(title)
     }
-
 }

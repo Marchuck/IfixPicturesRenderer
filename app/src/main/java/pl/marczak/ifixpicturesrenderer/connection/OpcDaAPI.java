@@ -9,15 +9,7 @@ import pl.marczak.ifixpicturesrenderer.connection.opc_da_model.ItemValueResult;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-/**
- * Project "SynopticScreens"
- * <p>
- * Created by Lukasz Marczak
- * on 15.03.2017.
- */
-
 public interface OpcDaAPI {
-
 
     @GET("api/OpcDa/") Observable<List<ItemValueResult>> getWorkspace();
 

@@ -1,7 +1,6 @@
 package pl.marczak.ifixpicturesrenderer.ifixPicture
 
 import android.util.Log
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
@@ -15,7 +14,6 @@ import pl.marczak.ifixpicturesrenderer.connection.opc_da_model.ItemValueResult
 import pl.marczak.ifixpicturesrenderer.model.Pictureable
 import pl.marczak.ifixpicturesrenderer.model.SingleIfixPicture
 import pl.marczak.ifixpicturesrenderer.model.data.IfixScreen
-import pl.marczak.ifixpicturesrenderer.model.newAge.PumpForeignObject
 import pl.marczak.ifixpicturesrenderer.model.newAge.PumpIfixPicture
 import pl.marczak.ifixpicturesrenderer.parsing.XmlParseResponse
 import pl.marczak.ifixpicturesrenderer.parsing.XmlParserWrapper
@@ -68,7 +66,7 @@ class IfixScreenPresenter(view: IfixScreenView?, restClient: OpcDaClient, parser
                 .doOnSubscribe {
                     view?.onLoadStart()
                 }
-                .compose(RxCommons.applySchedulers<Image>())
+                .compose(RxCommons.applySingleSchedulers<Image>())
                 .map { image -> image.content }
                 .map { xml ->
                     parser.parse(xml, arrayListOf(

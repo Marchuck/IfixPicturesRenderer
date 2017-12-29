@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.Toast
 import org.jetbrains.anko.support.v4.find
 import pl.marczak.ifixpicturesrenderer.ifixPicture.IfixScreenFragment
 
@@ -21,12 +20,12 @@ import pl.marczak.ifixpicturesrenderer.ifixPicture.IfixScreenFragment
 typealias FIX = IfixScreenFragment
 class AvailablePicturesFragment : BaseFragment<MainActivity>(), AvailablePicturesView {
 
-    internal val adapter: AvailablePicturesAdapter = AvailablePicturesAdapter()
-    internal var recyclerView: RecyclerView? = null
-    internal var progressBar: ProgressBar? = null
-    internal var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private val adapter: AvailablePicturesAdapter = AvailablePicturesAdapter()
 
-    internal var presenter: AvailablePicturesPresenter? = null
+    private var recyclerView: RecyclerView? = null
+    private var progressBar: ProgressBar? = null
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var presenter: AvailablePicturesPresenter? = null
 
     override fun onCreateView(inflater: android.view.LayoutInflater?, root: ViewGroup?,
                               savedInstanceState: Bundle?): android.view.View? {
@@ -46,14 +45,14 @@ class AvailablePicturesFragment : BaseFragment<MainActivity>(), AvailablePicture
 
     private fun setupViews() {
 
-        recyclerView = find<RecyclerView>(R.id.recyclerView)
+        recyclerView = find(R.id.recyclerView)
 
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
         recyclerView?.adapter = adapter
         adapter.listener = presenter
 
-        swipeRefreshLayout = find<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+        swipeRefreshLayout = find(R.id.swipeRefreshLayout)
         swipeRefreshLayout?.setOnRefreshListener {
 
             presenter?.requestForPictures()
@@ -94,12 +93,9 @@ class AvailablePicturesFragment : BaseFragment<MainActivity>(), AvailablePicture
     }
 
     companion object {
-        val TAG = AvailablePicturesFragment.javaClass.simpleName
+        val TAG = AvailablePicturesFragment.javaClass.simpleName!!
 
-        fun newInstance(): AvailablePicturesFragment {
-            val fragment = AvailablePicturesFragment()
-            return fragment
-        }
+        fun newInstance(): AvailablePicturesFragment = AvailablePicturesFragment()
     }
 
-}// Required empty public constructor
+}
